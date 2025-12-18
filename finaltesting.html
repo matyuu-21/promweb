@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Message</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+        }
+        
+        body {
+            background: url('https://img.freepik.com/free-photo/pastel-pink-vignette-concrete-textured-background_53876-129734.jpg?semt=ais_hybrid&w=740&q=80') center/cover no-repeat fixed;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            z-index: -1;
+        }
+        
+        /* Envelope container */
+        .envelope-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            transition: opacity 1s ease;
+        }
+        
+        /* Red realistic CSS envelope */
+        .envelope {
+            width: 320px;
+            height: 220px;
+            position: relative;
+            cursor: pointer;
+            z-index: 25;
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.3));
+        }
+        
+        .envelope-base {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #d32f2f, #b71c1c);
+            border-radius: 0 0 10px 10px;
+            z-index: 1;
+            box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #f44336, #d32f2f);
+            clip-path: polygon(0% 0%, 100% 0%, 50% 60%);
+            transform-origin: top;
+            transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 3;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+        
+        .envelope-side-left {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #c62828, #b71c1c);
+            clip-path: polygon(0% 0%, 30% 100%, 0% 100%);
+            z-index: 2;
+            border-radius: 10px 0 0 10px;
+        }
+        
+        .envelope-side-right {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #c62828, #b71c1c);
+            clip-path: polygon(100% 0%, 70% 100%, 100% 100%);
+            z-index: 2;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .envelope-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 22px;
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+            z-index: 4;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            padding: 0 20px;
+        }
+        
+        .envelope-text i {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffcdd2;
+            font-size: 28px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Celebration Message Popup - UPDATED */
+        .celebration-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 255, 255, 0.97);
+            padding: 35px 40px;
+            border-radius: 25px;
+            text-align: center;
+            z-index: 100;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+            border: 4px solid transparent;
+            max-width: 480px;
+            width: 90%;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Modern gradient border */
+            background-clip: padding-box;
+            background-image: linear-gradient(135deg, #ff66b2, #ff99cc, #ffccff, #ff99cc, #ff66b2);
+            background-origin: border-box;
+            background-size: 200% 200%;
+            animation: gradientBorder 3s ease infinite;
+        }
+        
+        @keyframes gradientBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .celebration-message.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        
+        .celebration-message h2 {
+            color: #ff66b2;
+            font-size: 3rem;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Celebration image */
+        .celebration-image {
+            width: 280px;
+            height: 280px;
+            margin: 10px auto 25px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 5px solid white;
+        }
+        
+        .celebration-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+        
+        .celebration-message .close-btn {
+            background: linear-gradient(135deg, #ff66b2, #ff3385);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin-top: 10px;
+            box-shadow: 0 8px 20px rgba(255, 102, 178, 0.3);
+        }
+        
+        .celebration-message .close-btn:hover {
+            background: linear-gradient(135deg, #ff3385, #ff0066);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 102, 178, 0.4);
+        }
+        
+        /* Heart explosion effect - SIMPLIFIED */
+        .heart-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 90;
+            pointer-events: none;
+        }
+        
+        .heart-pop {
+            font-size: 0;
+            color: #ff66b2;
+            animation: heartGrow 1s ease forwards;
+        }
+        
+        @keyframes heartGrow {
+            0% {
+                font-size: 0;
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                font-size: 120px;
+                transform: scale(1.2) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                font-size: 100px;
+                transform: scale(1) rotate(360deg);
+                opacity: 1;
+            }
+        }
+        
+        /* Confetti particles */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--color);
+            opacity: 0;
+            z-index: 80;
+            pointer-events: none;
+        }
+        
+        /* LETTER - starts hidden, rises out */
+        .letter-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 140px;
+            background: #fffef0;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 15;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            pointer-events: none;
+            border: 1px solid #e6d0b5;
+            overflow: hidden;
+        }
+        
+        .letter-container.rising {
+            animation: riseLetter 2s ease forwards;
+            pointer-events: all;
+            z-index: 30;
+        }
+        
+        @keyframes riseLetter {
+            0% {
+                width: 200px;
+                height: 140px;
+                transform: translate(-50%, -50%);
+                opacity: 0;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, calc(-50% - 100px));
+            }
+            40% {
+                transform: translate(-50%, calc(-50% - 200px));
+            }
+            60% {
+                width: 200px;
+                height: 140px;
+                transform: translate(-50%, calc(-50% - 250px));
+            }
+            80% {
+                width: 90%;
+                max-width: 700px;
+                height: 60px;
+                transform: translate(-50%, -50%);
+            }
+            100% {
+                width: 90%;
+                max-width: 700px;
+                height: 85vh;
+                transform: translate(-50%, -50%);
+                opacity: 1;
+                border-radius: 12px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            }
+        }
+        
+        .letter-content-initial {
+            padding: 20px;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        
+        .letter-content-full {
+            display: none;
+            padding: 40px;
+            height: 100%;
+            overflow-y: auto;
+            opacity: 0;
+        }
+        
+        .letter-container.rising .letter-content-initial {
+            display: none;
+        }
+        
+        .letter-container.rising .letter-content-full {
+            display: block;
+            animation: fadeIn 0.5s ease 1.5s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        .letter-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px dashed #d4b483;
+            padding-bottom: 20px;
+        }
+        
+        .letter-header h1 {
+            color: #a64d79;
+            font-size: 2.3rem;
+            margin-bottom: 10px;
+        }
+        
+        .letter-header p {
+            color: #7d3c5a;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+        
+        .letter-body {
+            line-height: 1.7;
+            font-size: 1.05rem;
+            color: #333;
+            margin-bottom: 60px;
+        }
+        
+        .letter-body p {
+            margin-bottom: 18px;
+        }
+        
+        /* Promposal section */
+        .promposal-section {
+            margin-top: 100px;
+            padding-top: 40px;
+            border-top: 2px dashed #d4b483;
+        }
+        
+        .promposal-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: #fff9f9;
+            border-radius: 10px;
+            border: 2px dashed #e6b0aa;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .promposal-container.visible {
+            display: block;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .promposal-container h2 {
+            color: #c0392b;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 14px 35px;
+            font-size: 1.4rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .yes-btn {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .no-btn {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+        }
+        
+        /* No button transformation effect */
+        .no-btn.transforming {
+            animation: transformToYes 0.8s ease forwards;
+        }
+        
+        @keyframes transformToYes {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            30% {
+                transform: translate(100px, -50px) scale(0.8);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translate(-100px, 50px) scale(0.6);
+                opacity: 0.3;
+            }
+            70% {
+                transform: translate(0, 0) scale(0.4);
+                opacity: 0.1;
+                background: linear-gradient(to right, #e74c3c, #c0392b);
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+                background: linear-gradient(to right, #2ecc71, #27ae60);
+            }
+        }
+        
+        /* Scroll indicator */
+        .scroll-indicator {
+            text-align: center;
+            margin: 40px 0 60px 0;
+            font-style: italic;
+            color: #7d3c5a;
+            padding: 20px;
+            background: rgba(255, 249, 249, 0.8);
+            border-radius: 10px;
+            border: 1px dashed #e6b0aa;
+            display: block;
+        }
+        
+        .scroll-indicator i {
+            margin-top: 10px;
+            color: #a64d79;
+            display: block;
+            animation: bounce 1s infinite alternate;
+        }
+        
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(5px); }
+        }
+        
+        /* POLAROIDS - hanging from top like ribbons */
+        .polaroid-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 25;
+            pointer-events: none;
+        }
+        
+        .polaroid {
+            position: absolute;
+            width: 160px;
+            height: 200px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            pointer-events: none;
+            border-radius: 3px;
+            transform-origin: top center;
+            top: -250px;
+        }
+        
+        .polaroid.hanging {
+            animation: swingDown 2s ease forwards;
+            pointer-events: all;
+        }
+        
+        @keyframes swingDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(var(--start-rotation));
+                top: -250px;
+            }
+            20% {
+                opacity: 0.7;
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(0) rotate(var(--mid-rotation));
+            }
+            80% {
+                transform: translateY(10px) rotate(var(--end-rotation));
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotate(var(--final-rotation));
+                top: var(--final-top);
+                left: var(--final-left);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+        }
+        
+        .polaroid::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            width: 2px;
+            height: 30px;
+            background: linear-gradient(to bottom, #aaa, #888);
+            transform: translateX(-50%);
+            opacity: 0;
+        }
+        
+        .polaroid.hanging::before {
+            animation: fadeInString 0.5s ease 1.5s forwards;
+        }
+        
+        @keyframes fadeInString {
+            to { opacity: 0.7; }
+        }
+        
+        .polaroid-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .polaroid-caption {
+            text-align: center;
+            padding: 10px 5px;
+            font-family: 'Courier New', monospace;
+            color: #555;
+            font-size: 13px;
+        }
+        
+        /* Flower Rain Animation */
+        .flower-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 35;
+            display: none;
+        }
+        
+        .flower-rain-item {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            opacity: 0;
+            animation: flowerRain 4s linear forwards;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.3));
+        }
+        
+        @keyframes flowerRain {
+            0% {
+                transform: translateX(-150px) translateY(-50px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.9;
+            }
+            90% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateX(calc(100vw + 150px)) translateY(calc(100vh + 50px)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .envelope {
+                width: 260px;
+                height: 180px;
+            }
+            
+            .envelope-text {
+                font-size: 20px;
+            }
+            
+            .envelope-text i {
+                font-size: 24px;
+            }
+            
+            .celebration-message {
+                padding: 25px;
+            }
+            
+            .celebration-message h2 {
+                font-size: 2.5rem;
+            }
+            
+            .celebration-image {
+                width: 220px;
+                height: 220px;
+            }
+            
+            .letter-container {
+                width: 160px;
+                height: 120px;
+            }
+            
+            .polaroid {
+                width: 130px;
+                height: 170px;
+            }
+            
+            .polaroid-img {
+                height: 110px;
+            }
+            
+            .promposal-container h2 {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 12px 30px;
+                font-size: 1.2rem;
+            }
+            
+            .letter-body {
+                margin-bottom: 40px;
+            }
+            
+            .promposal-section {
+                margin-top: 60px;
+                padding-top: 30px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .celebration-image {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .celebration-message h2 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Celebration Message Popup - UPDATED -->
+    <div class="celebration-message" id="celebrationMessage">
+        <h2>🎉 YAY! 🎉</h2>
+        <div class="celebration-image">
+            <img src="https://ih1.redbubble.net/image.175020317.3866/raf,360x360,075,t,fafafa:ca443f4786.u2.jpg" alt="Celebration">
+        </div>
+        <button class="close-btn" id="closeCelebration">Close</button>
+    </div>
+    
+    <!-- Heart Popup -->
+    <div class="heart-popup" id="heartPopup"></div>
+    
+    <!-- Flower Rain Container -->
+    <div class="flower-rain" id="flowerRain"></div>
+    
+    <!-- Envelope container -->
+    <div class="envelope-container" id="envelopeContainer">
+        <div class="envelope" id="envelope">
+            <div class="envelope-base"></div>
+            <div class="envelope-side-left"></div>
+            <div class="envelope-side-right"></div>
+            <div class="envelope-flap"></div>
+            
+            <div class="envelope-text">
+                <i class="fas fa-heart"></i>
+                Click to open
+            </div>
+        </div>
+    </div>
+    
+    <!-- Letter - hidden initially -->
+    <div class="letter-container" id="letterContainer">
+        <div class="letter-content-initial">
+            A special message...
+        </div>
+        <div class="letter-content-full" id="letterContent">
+            <div class="letter-header">
+                <h1>Will you be my Prom Partner?</h1>
+                <p>BUT FIRST READ THE STUFF HEHEHE</p>
+            </div>
+            
+            <div class="letter-body">
+                <p>Dear Jillian Clarisse S. Fernandez,</p>
+                
+                <p>hihihihi honeyyy, Im literally writing this after like 5000 morbillion drafts cause I deadass have a hard time trying to make my straightforwardness into one big big looonggg letter, or that I just dont know what to start my letter with so probably this random monologue's gonna be the start of this letter. You've probably already read my "Decoy Letter" or in other words my draft before writing this actual cool fire letter!! 😎, but like Im literally writing this the day before the party and I guess I know what you feel when you do your gifts near the party deadline hahahaha.</p>
+                
+                <p>ANYWAYS, Im really glad that we're still together until now (and hopefully till the end of time), and I know thats like the most cliche message in almost every letter but like straight to my heart I'd be lying right now if i said that you didnt play such a huge part in my life these past few years, from the day you confessed up until today helped me be the person i am today, of course our friends also had a part in that but ykwim you the 1 of 1 person in my life yo! Even when we had some bumps and arguments over the past few years, our relationship wouldnt be as healthy as it is right now without those moments.</p>
+                
+                <p>And also the partial reason for me writing this is because we both know (as stated in my other letter) that I'll probably not be studying here for shs and will of course be going to the M word (Mapua) and I wanna just cherish and have more fun memories with you while it lasts (pero syempre d naman ibig sabihin na sa iba ako mag s-shs at maybe college na hindi na ako uuwe dito :D) AND like, I know it's gonna be hard for the both of us not seeing each other at school all the time, or like not being just a 10 minute walk away from each other (ket d tayo pinapayagan but you get what i mean).</p>
+                
+                <p>You are literally the woman I plan on being successful with in the future until we achieve our dreams (and hopefully get outta this corrupt ass country with our family cause yk what vin diesel says "i got family" LAALAAAAA) but ya ya ya Im just kinda running out of things to type in this letter but like you know me, from the bottom of my heart and soul even when I dont show it sometimes please always know that I love you so much, i love love love love you sooooo much that I literally keep thinking of you whenever I see stuff that I can see the both of us doing in the future, andddd I think thats like pretty much all i can say from the top of my head waaaaaaah. ALSO I HOPE I GET A LAPTOP FOR CHRISTMAS OR MY BIRTHDAY OR BASTA REALLY SOON CAUSE I WANNA PLAY GAMES ALOT WITH YOU AGAINNNN.</p>
+                
+                <!-- Extra content for scrolling -->
+                
+                <p>Lastlyyy, you know what event's coming soon right?? ITS PROOOOMMMM!!! I actually just did all this to ask you out for prom hehehe, but like it would be pretty underwhelming if it just said "will you go to prom with me" with some media reference like a joke or something. Anyways, I know its pretty obvious that you'll be my prom partner (duh) but like I remember talking about how we'd do this and you did say you wanted it to be lowkeyyy soooooooooooooooooooooooooooooooooooooooooooooooooooooooooo</p>
+                
+                <p>Will you make that special night, even more special for the both of us?</p>
+            </div>
+            
+            <!-- Scroll indicator -->
+            <div class="scroll-indicator" id="scrollIndicator">
+                <p>You're almost there! Scroll just a little more...</p>
+                <i class="fas fa-arrow-down"></i>
+            </div>
+            
+            <!-- Promposal section -->
+            <div class="promposal-section">
+                <div class="promposal-container" id="promposal">
+                    <h2>Will you go to prom with me?</h2>
+                    <div class="buttons">
+                        <button class="btn yes-btn" id="yesBtn">YES!</button>
+                        <button class="btn no-btn" id="noBtn">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Polaroids Container -->
+    <div class="polaroid-container">
+        <div class="polaroid" id="polaroid1">
+            <img src="https://cdn.discordapp.com/attachments/1451141373678845956/1451141725413441657/image.png?ex=6945188c&is=6943c70c&hm=762440bc1199b1259e994d05c09c6ede30693dc0b6f9d0e929660551754d5337&" alt="Good times" class="polaroid-img">
+            <p class="polaroid-caption">Career Guidance!</p>
+        </div>
+        <div class="polaroid" id="polaroid2">
+            <img src="https://media.discordapp.net/attachments/1451141373678845956/1451141751266869369/image.png?ex=69451892&is=6943c712&hm=51734a9f2171245424fde4dce3dabd9e1aa45e3a1dbf594c045d83dec6a71ec5&=&format=webp&quality=lossless" alt="Beautiful moments" class="polaroid-img">
+            <p class="polaroid-caption">Foundation Day!</p>
+        </div>
+        <div class="polaroid" id="polaroid3">
+            <img src="https://media.discordapp.net/attachments/1451141373678845956/1451141795106000999/image.png?ex=6945189c&is=6943c71c&hm=e5081378f470f6607ba8a7869b029d75e9873f71551cca1d518a369e53706da4&=&format=webp&quality=lossless" alt="Fun adventures" class="polaroid-img">
+            <p class="polaroid-caption">Mini-Prom!</p>
+        </div>
+        <div class="polaroid" id="polaroid4">
+            <img src="https://media.discordapp.net/attachments/1451141373678845956/1451141563878084709/IMG_20241219_202329.jpg?ex=69451865&is=6943c6e5&hm=c56462dc20e3acbdf26ffe8dfdc09712ba5376b3e745903c77223e4573ad60a6&=&format=webp&width=642&height=856" alt="Special memories" class="polaroid-img">
+            <p class="polaroid-caption">G9 Xmas Party!</p>
+        </div>
+        <div class="polaroid" id="polaroid5">
+            <img src="https://media.discordapp.net/attachments/1451141373678845956/1451141562397626469/20251004_151448.jpg?ex=69451865&is=6943c6e5&hm=8fc9be70db84d87a3149fc43490a472cca44f031ee7703149e615a4ff2992e74&=&format=webp&width=642&height=856" alt="Happy days" class="polaroid-img">
+            <p class="polaroid-caption">GoofyGooob</p>
+        </div>
+        <div class="polaroid" id="polaroid6">
+            <img src="https://media.discordapp.net/attachments/1451141373678845956/1451141565085913128/20241012_163249-1.jpg?ex=69451866&is=6943c6e6&hm=d69c567c412590076764340a1fdd4e54f515777c46ea6e63239b220f1086efbf&=&format=webp&width=808&height=606" alt="Cherished times" class="polaroid-img">
+            <p class="polaroid-caption">USSS!</p>
+        </div>
+    </div>
+    
+    <script>
+        // Flower rain animation when envelope opens
+        function createFlowerRain() {
+            const flowerRain = document.getElementById('flowerRain');
+            
+            const purpleLilyImages = [
+                'https://i.pinimg.com/originals/6b/42/3d/6b423d539d3eb83b28422c2da0d569ee.png',
+                'https://i.pinimg.com/originals/6b/42/3d/6b423d539d3eb83b28422c2da0d569ee.png',
+                'https://i.pinimg.com/originals/a5/72/0d/a5720dab3af54a955918bb99070679e1.png',
+                'https://i.pinimg.com/originals/18/eb/d5/18ebd5c802388db197c63b02e2e3c02b.png',
+                'https://i.pinimg.com/originals/8c/e1/8d/8ce18d6e1ccced911721919f50c93a18.png',
+                'https://i.pinimg.com/originals/a9/b3/08/a9b30840d13a8f6fffbb0db391297163.png'
+            ];
+            
+            flowerRain.style.display = 'block';
+            
+            for (let i = 0; i < 40; i++) {
+                const flower = document.createElement('div');
+                flower.className = 'flower-rain-item';
+                
+                const randomImage = purpleLilyImages[Math.floor(Math.random() * purpleLilyImages.length)];
+                flower.style.backgroundImage = `url('${randomImage}')`;
+                
+                const startY = Math.random() * 100;
+                const size = Math.random() * 60 + 80;
+                const duration = Math.random() * 3 + 2.5;
+                const delay = Math.random() * 1.5;
+                const rotation = Math.random() * 360;
+                
+                flower.style.width = `${size}px`;
+                flower.style.height = `${size}px`;
+                flower.style.top = `${startY}%`;
+                flower.style.left = `-150px`;
+                flower.style.animationDuration = `${duration}s`;
+                flower.style.animationDelay = `${delay}s`;
+                flower.style.transform = `rotate(${rotation}deg)`;
+                flower.style.filter = 'drop-shadow(4px 4px 6px rgba(0,0,0,0.25))';
+                
+                if (Math.random() > 0.7) flower.style.opacity = '0.8';
+                
+                flowerRain.appendChild(flower);
+                
+                setTimeout(() => {
+                    if (flower.parentNode) flower.parentNode.removeChild(flower);
+                }, (duration + delay) * 1000);
+            }
+            
+            setTimeout(() => {
+                flowerRain.style.display = 'none';
+            }, 7000);
+        }
+        
+        // Create confetti explosion
+        function createConfettiExplosion() {
+            const colors = ['#ff66b2', '#ff99cc', '#ffccff', '#ff99cc', '#ff66b2', '#ff3385', '#ff0066', '#ffccff', '#ffb3d9', '#ff99cc'];
+            
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.setProperty('--color', colors[Math.floor(Math.random() * colors.length)]);
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 300 + 100;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance;
+                
+                const size = Math.random() * 10 + 5;
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                
+                confetti.style.left = '50%';
+                confetti.style.top = '50%';
+                
+                const duration = Math.random() * 1 + 1;
+                const delay = Math.random() * 0.5;
+                
+                confetti.style.animation = `
+                    confettiExplode ${duration}s ease ${delay}s forwards
+                `;
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes confettiExplode {
+                        0% {
+                            transform: translate(0, 0) rotate(0deg) scale(0);
+                            opacity: 0;
+                        }
+                        10% {
+                            opacity: 1;
+                            transform: translate(0, 0) rotate(0deg) scale(1);
+                        }
+                        100% {
+                            transform: translate(${x}px, ${y}px) rotate(${Math.random() * 720}deg) scale(0);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                
+                document.head.appendChild(style);
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.parentNode.removeChild(confetti);
+                    }
+                }, (duration + delay) * 1000);
+            }
+        }
+        
+        // Heart pop animation
+        function createHeartPopup() {
+            const heartPopup = document.getElementById('heartPopup');
+            
+            // Create heart
+            const heart = document.createElement('div');
+            heart.className = 'heart-pop';
+            heart.innerHTML = '<i class="fas fa-heart"></i>';
+            heartPopup.appendChild(heart);
+            
+            // Create confetti explosion
+            
+            
+            // Show celebration message after heart animation
+            setTimeout(() => {
+                document.getElementById('celebrationMessage').classList.add('active');
+            }, 1000);
+            
+            // Clean up heart after animation
+            setTimeout(() => {
+                heartPopup.innerHTML = '';
+            }, 1500);
+        }
+        
+        // Setup hanging polaroids
+        function setupHangingPolaroids() {
+            const positions = [
+                { 
+                    id: 'polaroid1', 
+                    left: '15%', 
+                    top: '15%',
+                    startRotation: -15,
+                    midRotation: -5,
+                    endRotation: 2,
+                    finalRotation: -3
+                },
+                { 
+                    id: 'polaroid2', 
+                    left: '10%', 
+                    top: '45%',
+                    startRotation: 10,
+                    midRotation: -2,
+                    endRotation: 4,
+                    finalRotation: 1
+                },
+                { 
+                    id: 'polaroid3', 
+                    left: '18%', 
+                    top: '75%',
+                    startRotation: -8,
+                    midRotation: 3,
+                    endRotation: -6,
+                    finalRotation: -2
+                },
+                { 
+                    id: 'polaroid4', 
+                    left: '80%', 
+                    top: '20%',
+                    startRotation: 12,
+                    midRotation: -4,
+                    endRotation: 3,
+                    finalRotation: 5
+                },
+                { 
+                    id: 'polaroid5', 
+                    left: '85%', 
+                    top: '50%',
+                    startRotation: -10,
+                    midRotation: 5,
+                    endRotation: -3,
+                    finalRotation: -4
+                },
+                { 
+                    id: 'polaroid6', 
+                    left: '75%', 
+                    top: '80%',
+                    startRotation: 8,
+                    midRotation: -3,
+                    endRotation: 6,
+                    finalRotation: 3
+                }
+            ];
+            
+            positions.forEach(pos => {
+                const polaroid = document.getElementById(pos.id);
+                polaroid.style.setProperty('--final-left', pos.left);
+                polaroid.style.setProperty('--final-top', pos.top);
+                polaroid.style.setProperty('--start-rotation', `${pos.startRotation}deg`);
+                polaroid.style.setProperty('--mid-rotation', `${pos.midRotation}deg`);
+                polaroid.style.setProperty('--end-rotation', `${pos.endRotation}deg`);
+                polaroid.style.setProperty('--final-rotation', `${pos.finalRotation}deg`);
+                
+                polaroid.style.left = pos.left;
+                polaroid.style.top = '-250px';
+            });
+        }
+        
+        function swingPolaroidsDown() {
+            const polaroids = [
+                document.getElementById('polaroid1'),
+                document.getElementById('polaroid2'),
+                document.getElementById('polaroid3'),
+                document.getElementById('polaroid4'),
+                document.getElementById('polaroid5'),
+                document.getElementById('polaroid6')
+            ];
+            
+            polaroids.forEach((polaroid, index) => {
+                setTimeout(() => {
+                    polaroid.classList.add('hanging');
+                }, index * 300);
+            });
+        }
+        
+        // Open envelope sequence
+        document.getElementById('envelope').addEventListener('click', function() {
+            if (this.classList.contains('open')) return;
+            
+            this.classList.add('open');
+            
+            setupHangingPolaroids();
+            
+            setTimeout(() => {
+                createFlowerRain();
+            }, 300);
+            
+            setTimeout(() => {
+                const letterContainer = document.getElementById('letterContainer');
+                letterContainer.classList.add('rising');
+                
+                setTimeout(() => {
+                    swingPolaroidsDown();
+                }, 2000);
+                
+                setTimeout(() => {
+                    const letterContent = document.getElementById('letterContent');
+                    if (letterContent) {
+                        letterContent.style.overflowY = 'auto';
+                        letterContent.style.maxHeight = 'calc(85vh - 80px)';
+                    }
+                }, 2500);
+                
+            }, 800);
+        });
+        
+        // Handle YES button click
+        document.getElementById('yesBtn').addEventListener('click', function() {
+            createHeartPopup();
+        });
+        
+        // Handle NO button click - transforms into YES
+        document.getElementById('noBtn').addEventListener('click', function() {
+            const btn = this;
+            
+            // Add transformation animation
+            btn.classList.add('transforming');
+            
+            // Change to YES after animation
+            setTimeout(() => {
+                btn.textContent = "YES!";
+                btn.className = "btn yes-btn";
+                btn.classList.remove('transforming');
+                
+                // Now it behaves like a YES button
+                btn.onclick = function() {
+                    createHeartPopup();
+                };
+            }, 800);
+        });
+        
+        // Close celebration message
+        document.getElementById('closeCelebration').addEventListener('click', function() {
+            document.getElementById('celebrationMessage').classList.remove('active');
+        });
+        
+        // Handle scroll to show promposal
+        function setupScrollListener() {
+            const letterContent = document.getElementById('letterContent');
+            const promposal = document.getElementById('promposal');
+            
+            if (letterContent) {
+                letterContent.onscroll = function() {
+                    const scrollTop = this.scrollTop;
+                    const scrollHeight = this.scrollHeight;
+                    const clientHeight = this.clientHeight;
+                    
+                    const scrollPercentage = scrollTop / (scrollHeight - clientHeight);
+                    
+                    if (scrollPercentage > 0.85) {
+                        promposal.classList.add('visible');
+                    }
+                };
+            }
+        }
+        
+        setTimeout(() => {
+            setupScrollListener();
+        }, 3000);
+    </script>
+</body>
+</html>
